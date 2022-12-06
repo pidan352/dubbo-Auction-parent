@@ -38,7 +38,7 @@ public class UserController {
 	@Reference
 	private UserService us;
 
-	@Reference
+	@Autowired
 	private DefaultKaptcha captchaProducer;
 
 	@RequestMapping("{url}.html")
