@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lyl.mapper.AuctionDetailMapper">
+
+    <resultMap id="AuctionDetail" type="com.lyl.pojo.Auction">
+        <id column="auctionId" property="auctionid" jdbcType="INTEGER"/>
+        <result column="auctionName" property="auctionname" jdbcType="VARCHAR"/>
+        <result column="auctionStartPrice" property="auctionstartprice" jdbcType="DECIMAL"/>
+        <result column="auctionUpset" property="auctionupset" jdbcType="DECIMAL"/>
+        <result column="auctionStartTime" property="auctionstarttime" jdbcType="TIMESTAMP"/>
+        <result column="auctionEndTime" property="auctionendtime" jdbcType="TIMESTAMP"/>
+        <result column="auctionPic" property="auctionpic" jdbcType="VARCHAR"/>
+        <result column="auctionPicType" property="auctionpictype" jdbcType="VARCHAR"/>
+        <result column="auctionDesc" property="auctiondesc" jdbcType="VARCHAR"/>
+
+        <collection property="recordList" ofType="com.lyl.pojo.Auctionrecord">
+            <id column="record_id" property="id" jdbcType="INTEGER"/>
+            <result column="record_userid" property="userid" jdbcType="INTEGER"/>
+            <result column="record_auctionid" property="auctionid" jdbcType="INTEGER"/>
+            <result column="auctionTime" property="auctiontime" jdbcType="TIMESTAMP"/>
+            <result column="auctionPrice" property="auctionprice" jdbcType="DECIMAL"/>
+
+            <association property="user" javaType="com.lyl.pojo.Auctionuser">
+                <id column="record_userid" property="userid" jdbcType="INTEGER"/>
+                <result column="userName" property="username" jdbcType="VARCHAR"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <select id="findAuctionDetailById" resultMap="AuctionDetail" parameterType="int">
+        SELECT
+            a.*,
+            ar.id record_id,
+            ar.auctionId record_auctionid,
+            ar.userId record_userid,
+            ar.auctionPrice,
+            ar.auctionTime,
+            au.userName
+        FROM auction a LEFT JOIN auctionrecord ar ON a.auctionId=ar.auctionId
+        LEFT JOIN auctionuser au on au.userId=ar.userId
+        where a.auctionId=#{id}
+        ORDER BY ar.auctionPrice DESC
+    </select>
+
+
+    <select id="findEndAuctionDetailr" resultType="com.lyl.pojo.AuctionrecordDo">
+        SELECT
+            a.auctionName,
+            a.auctionStartTime,
+            a.auctionEndTime,
+            a.auctionStartPrice,
+            ar.auctionPrice,
+            au.userName
+        FROM auction a,auctionrecord ar,auctionuser au
+        WHERE a.auctionId=ar.auctionId AND ar.userId=au.userId
+        AND a.auctionEndTime<![CDATA[<]]>NOW()
+        AND ar.auctionPrice =(SELECT MAX(ar2.auctionPrice)
+                                FROM auctionrecord ar2
+                                WHERE ar.auctionId=ar2.auctionId)
+    </select>
+
+
+
+
+
+    <select id="findIngAuctions" resultMap="AuctionDetail">
+        SELECT
+            a.*,
+            ar.id record_id,
+            ar.auctionPrice,
+            ar.auctionId record_auctionid,
+            ar.userId record_userid,
+            ar.auctionPrice,
+            ar.auctionTime,
+            au.userName
+        FROM auction a LEFT JOIN auctionrecord ar ON a.auctionId=ar.auctionId
+        INNER JOIN auctionuser au ON au.userId=ar.userId
+        WHERE a.auctionEndTime<![CDATA[>]]>NOW()
+
+    </select>
+</mapper>

@@ -75,6 +75,9 @@
         <module>auction-web</module>
         <module>auction-user-api</module>
         <module>auction-user-service</module>
+        <module>auction-utils</module>
+        <module>auction-test</module>
+        <module>auction-exception</module>
     </modules>
 
 
