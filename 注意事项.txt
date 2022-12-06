@@ -1,0 +1,3 @@
+1.依赖关系要弄清
+2.service中的@Service导包是alibaba的包
+3.控制器中注入Service时要用@Reference，而其他注入依旧使用@Autowire
